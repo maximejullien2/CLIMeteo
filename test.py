@@ -1,35 +1,67 @@
-from termcharts import bar
 from rich import print
 from rich.layout import Layout
 from rich.console import Console
 from rich.panel import Panel
 
-layout = Layout()
+import plotext as plt
 
-layout.split_column(
-    Layout(name="cityName"),
-    Layout(name="date"),
-    Layout(name="body"),
-    Layout(name="footer"),
-)
+def initLayout():
+    layout = Layout()
 
-layout["date"].split_row(
-    Layout(name="previous"),
-    Layout(name="current"),
-    Layout(name="next"),
-)
+    layout.split_column(
+        Layout(name="cityName"),
+        Layout(name="date"),
+        Layout(name="body"),
+        Layout(name="footer"),
+    )
 
-charts = [
-    bar({'8:00': 18}, title="", mode="v", rich=True),
-    bar({'9:00': 19}, title="", mode="v", rich=True),
-    bar({'10:00': 15}, title="", mode="v", rich=True),
-    bar({'11:00': 17}, title="", mode="v", rich=True),
-    bar({'12:00': 18}, title="", mode="v", rich=True),
-    bar({'13:00': 20}, title="", mode="v", rich=True),
+    layout["date"].split_row(
+        Layout(name="previous"),
+        Layout(name="current"),
+        Layout(name="next"),
+    )  
+
+    return layout 
+
+"""
+data:
+[
+    [date, temp, rainPercent, weatherType]
+    [date, temp, rainPercent, weatherType]
+    [date, temp, rainPercent, weatherType]
+    [date, temp, rainPercent, weatherType]
+    [date, temp, rainPercent, weatherType]
 ]
+"""
+def makeBarGraph(data, layout):
+    layout["body"].split_row(
+        Layout(name="day1"),
+        Layout(name="day2"),
+        Layout(name="day3"),
+        Layout(name="day4"),
+        Layout(name="day5")
+    )
 
-chartRenderable = [Panel(i, expand = True) for i in charts]
-layout["body"].update(chartRenderable)
+    for i, instance in enumerate(data):
+        layout["body"]["day"+str(i+1)].split_column(
+            Layout(name="barGraph"),
+            Layout(name="date"),
+            Layout(name="rainPercent"),
+            Layout(name="weatherType"),
+        )
 
+        # make bar graph witha single bar with plotext
+        # update through a panel?
+        layout["body"]["day"+str(i+1)]["barGraph"].update(Panel("""insert graph here"""))
+
+        # make date with Text()
+        # make rainPercentage with Text()
+        # make weatherType with Text() an emojis        
+    
+    return layout
+
+layout = initLayout()
+
+layout = makeBarGraph()
 
 print(layout)
