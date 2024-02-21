@@ -5,15 +5,25 @@ import callAPI
 from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 
+if sys.argv[1]=="-h":
+    messageErreur = "Usage:\n \t python cliMeteo.py -city city [-country country -mode 1] \n\n"
+    messageErreur+= "Options and arguments (and corresponding environment variables):\n\n"
+    messageErreur+= "-city nomVille  : Pour donner la ville dont on veut récupérer les données météo (Obligatoire ) .\n\n"
+    messageErreur+="-country nomPays: Pour donner le pays de la ville dont on veut récupérer les données météo \n                  ( Optionnelle ,valeur origine vide,pour éviter les erreurs \n                  lorsqu'il existe plusieurs villes ayant le même nom ) .\n\n"
+    messageErreur+="-mode 1 ou 2    : Pour choisir le mode d’affichage que l’on veut avoir ( Soit 3 heure par 3 heure (mode 1) \n                   ou jour par jour(mode 2 ) (Optionnelle , valeur origine 1).\n\n"
+    messageErreur+="-h              : Fourni de l’aide pour l'utilisation du programme (Optionnelle)."
+    sys.exit(messageErreur)
+
+
 fini = False
 #To know if the program is finish
 
 rechercher = False
 #To know if we need to do a research on a city
 
-mode = 0 
-# mode = 0 This is the mode for precipitation
-# mode = 1 this is the mode to know the speed of wind
+mode = 1
+# mode = 1 This is the mode for precipitation
+# mode = 2 this is the mode to know the speed of wind
 city_forecast = None
 
 async def main() -> None:
@@ -32,18 +42,18 @@ async def main() -> None:
         for key_press in input.read_keys():
             if key_press.key ==" ":
                 #Will change application mode
-                if(mode == 0):
+                if(mode == 1):
+                    mode =2
+                elif(mode == 2):
                     mode =1
-                elif(mode == 1):
-                    mode =0
                 
             elif key_press.key == "v":
                 #Will change mode into speed of wind
-                mode = 1
+                mode = 2
                 print("i")
             elif key_press.key == "p":
                 #Will change mode into precipitation
-                mode = 0
+                mode = 1
                 print("i")
             elif key_press.key == "right":
                 #Will change display of time in the futur
@@ -70,6 +80,8 @@ if len(sys.argv) < 3:
 if sys.argv[1] != "-city":
     sys.exit("Il manque l'argument -city obligatoire pour sélectionner une ville")
 
+if sys.argv[1] == "-country":
+    sys.exit("L'argument -country doit ètre donnée après l'argument city") 
 
 
 city = sys.argv[2]
