@@ -2,27 +2,35 @@
 
 CLIMeteo est une application permettant de récupérer les informations météorologique d'une ville .
 
-##Installation 
+## Installation 
 Pour installer tous les packages nécessaires pour l'utilisation de l'application , lancez dans votre terminal bash :
 
 ```bash
 ./installation.sh
 ```
 
-##Utilisation 
-Lancer dans votre terminal la commande suivante : 
+## Utilisation 
 
-```bash
-python cliMeteo.py -country country [-state state -mode 1]
+Il faudra tout d'abord créer une clée API [Open Weather Map](https://openweathermap.org) et la placer dans un fichier credentials.py qui contient :
+
+```python
+OWM_API_KEY = "YourAPIKey"
 ```
 
-##Sortie de l'application
+Ensuite, lancez dans votre terminal la commande suivante : 
 
-Voici le résultat sur la ville d'Avignon :
+```bash
+python cliMeteo.py -city city [ -country country -mode 1]
+```
 
-##Librairie utilisé
+## Sortie de l'application
+
+Voici un exemple de résultat sorti :
+
+
+
+## Librairie utilisé
 * [Requests](https://requests.readthedocs.io/en/latest/)
-* [Pandas](https://pandas.pydata.org/)
 * [GeoPy](https://geopy.readthedocs.io/en/stable/)
 * [datetime](https://docs.python.org/fr/3/library/datetime.html)
 * [rich_](https://rich.readthedocs.io/en/latest/)
