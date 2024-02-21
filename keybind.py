@@ -1,55 +1,62 @@
 import asyncio
 import sys
 from os import system
-
+import callAPI
 from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 
 fini = False
-#Permet de savoir lorsque si le programme doit etre terminé ou non.
+#To know if the program is finish
 
 rechercher = False
-#Permet de savoir si on doit réaliser une recherche.
+#To know if we need to do a research on a city
 
 mode = 0 
-# mode = 0 Correspond au mode pour la précépitation
-# mode = 1 Correspond au mode pour le vent
+# mode = 0 This is the mode for precipitation
+# mode = 1 this is the mode to know the speed of wind
+city_forecast = None
 
 async def main() -> None:
-    global fini,rechercher
+    """
+    Represent the main programm about keybinds
+    """
+    global fini,rechercher,city_forecast
     done = asyncio.Event()
     input = create_input()
 
     def keys_ready():
-        global fini,rechercher
+        """
+        For each key who are pressed , we will test if this correspond to a specific type of Keys.
+        """
+        global fini,rechercher,city_forecast
         for key_press in input.read_keys():
             if key_press.key ==" ":
-                #changement de mode
+                #Will change application mode
                 if(mode == 0):
                     mode =1
                 elif(mode == 1):
                     mode =0
                 
             elif key_press.key == "v":
-                #changement de mode vers le mode vent
+                #Will change mode into speed of wind
                 mode = 1
                 print("i")
             elif key_press.key == "p":
-                #changement de mode vers le mode precipitation
+                #Will change mode into precipitation
                 mode = 0
                 print("i")
             elif key_press.key == "right":
-                #changement de l'heure vers le futur
+                #Will change display of time in the futur
                 print("i")
             elif key_press.key == "left":
-                #changement de l'heure vers le passé
+                #Will change display of time in the past
                 print("i")
             elif key_press.key == "r":
-                #recherche pour une nouvelle ville
-                #Mise à zéro du terminal
+                #Try to search meteo for a new city
                 rechercher = True
                 done.set()
             elif key_press.key == Keys.ControlC:
+                #Stop the application
                 fini = True
                 done.set()
 
@@ -62,21 +69,35 @@ if len(sys.argv) < 3:
 
 if sys.argv[1] != "-city":
     sys.exit("Il manque l'argument -city obligatoire pour sélectionner une ville")
- 
 
-#city = sys.argv[2]
-#city_coordinates = get_coordinates(city)
-#city_weather = get_weather(city_coordinates)
-#city_forecast = get_forecast(city_coordinates)
-#Affichage avec les données
 
-#while fini == False :
-asyncio.run(main())
-    #if(rechercher):
-        #city = input("Recherche par rapport à une ville : ")
-        #city_coordinates = get_coordinates(city)
-        #city_weather = get_weather(city_coordinates)
-        #city_forecast = get_forecast(city_coordinates)
-        #system("clear")
-        #Affichage avec les données
-#    rechercher = False
+
+city = sys.argv[2]
+city_coordinates = callAPI.get_coordinates(city)
+while city_coordinates == None : 
+    city = input("Veuillez entrer le nom d'une ville : ")
+    city_coordinates = callAPI.get_coordinates(city)
+city_weather = callAPI.get_weather(city_coordinates)
+city_forecast = callAPI.get_forecast(city_coordinates)
+
+print(city_weather)
+
+for forecast in city_forecast:
+  print(forecast)
+
+while fini == False :
+    asyncio.run(main())
+    if(rechercher):
+        city = input("Veuillez entrer le nom d'une ville : ")
+        city_coordinates = callAPI.get_coordinates(city)
+        while city_coordinates == None : 
+            city = input("Veuillez entrer le nom d'une ville : ")
+            city_coordinates = callAPI.get_coordinates(city)
+        city_weather = callAPI.get_weather(city_coordinates)
+        city_forecast = callAPI.get_forecast(city_coordinates)
+        system("clear")
+        print(city_weather)
+        for forecast in city_forecast:
+            print(forecast)
+    rechercher = False
+system("clear")

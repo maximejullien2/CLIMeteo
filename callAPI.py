@@ -1,7 +1,5 @@
 import requests
-import pandas as pd
 from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
 import datetime
 import credentials
 
@@ -18,10 +16,12 @@ def get_coordinates(city : str):
     
     """
     if city == "":
-        raise Exception("City string is empty")
+        print("City string is empty")
+        return None
     response = locator.geocode(query={"city": city})
     if response == None:
-        raise Exception("City has not been found")
+        print("City has not been found")
+        return None
     return {
         "latitude": response.latitude,
         "longitude": response.longitude
@@ -82,12 +82,12 @@ def get_forecast(coordinates : map):
         listOfForecasts.append(forecast)
     return listOfForecasts
 
-city = "Morieres-les-Avignon"
-city_coordinates = get_coordinates(city)
-city_weather = get_weather(city_coordinates)
-city_forecast = get_forecast(city_coordinates)
+#city = "Morieres-les-Avignon"
+#city_coordinates = get_coordinates(city)
+#city_weather = get_weather(city_coordinates)
+#city_forecast = get_forecast(city_coordinates)
 
-print(city_weather)
+#print(city_weather)
 
-for forecast in city_forecast:
-  print(forecast)
+#for forecast in city_forecast:
+#  print(forecast)
