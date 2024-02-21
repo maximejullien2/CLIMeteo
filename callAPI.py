@@ -5,7 +5,7 @@ import credentials
 
 
 locator = Nominatim(user_agent="CLIMeteo")
-def get_coordinates(city : str):
+def get_coordinates(city : str,country : str):
     """Finds the coordinates of a given city
 
     Parameters:
@@ -18,7 +18,10 @@ def get_coordinates(city : str):
     if city == "":
         print("City string is empty")
         return None
-    response = locator.geocode(query={"city": city})
+    if country != None:
+        response = locator.geocode(query={"city": city,"country" : country})
+    else:
+        response = locator.geocode(query={"city": city})
     if response == None:
         print("City has not been found")
         return None
