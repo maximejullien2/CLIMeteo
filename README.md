@@ -35,3 +35,5 @@ Voici un exemple de résultat sorti :
 * [datetime](https://docs.python.org/fr/3/library/datetime.html)
 * [rich_](https://rich.readthedocs.io/en/latest/)
 * [plotext](https://github.com/piccolomo/plotext)
+* [asyncio](https://docs.python.org/3/library/asyncio.html)
+* [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/)
