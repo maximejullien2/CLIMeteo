@@ -80,18 +80,21 @@ if len(sys.argv) < 3:
 if sys.argv[1] != "-city":
     sys.exit("Il manque l'argument -city obligatoire pour sélectionner une ville")
 
-if sys.argv[1] == "-country":
-    sys.exit("L'argument -country doit ètre donnée après l'argument city") 
 
 
 city = sys.argv[2]
 country = None
-if len(sys.argv)>3 :
+if len(sys.argv)==5 :
+    if sys.argv[3] != "-country":
+        sys.exit("L'argument -country n'existe pas ou est mal placé")
     country = sys.argv[4]
 city_coordinates = callAPI.get_coordinates(city,country)
 while city_coordinates == None : 
     city = input("Veuillez entrer le nom d'une ville : ")
-    city_coordinates = callAPI.get_coordinates(city)
+    country = input("Veuillez entrer le pays de ville que vous avez écrit (Non obligatoire): ")
+    if country == "":
+        country = None
+    city_coordinates = callAPI.get_coordinates(city,country)
 city_weather = callAPI.get_weather(city_coordinates)
 city_forecast = callAPI.get_forecast(city_coordinates)
 
