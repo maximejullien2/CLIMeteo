@@ -7,6 +7,7 @@ from rich.console import Group
 from rich.panel import Panel
 from rich.jupyter import JupyterMixin
 from rich.ansi import AnsiDecoder
+from rich.console import Console
 
 import datetime
 
@@ -41,14 +42,14 @@ class RichGraph(JupyterMixin):
         self.rich_canvas = Group(*self.decoder.decode(canvas))
         yield self.rich_canvas
 
-def initLayout():
+def initLayout(footerSize = 3):
     layout = Layout()
 
     layout.split_column(
         Layout(name="cityName", size=1),
         Layout(name="date", size=3),
         Layout(name="body"),
-        Layout(name="footer", size=3),
+        Layout(name="footer", size=footerSize),
     )
 
     layout["date"].split_row(
@@ -118,8 +119,6 @@ def makeBarGraph(data, start, end, layout):
     data = data[start:end+1]
     maxTemp = getMaxTemp(data)
 
-    print(maxTemp)
-
     for i, instance in enumerate(data):
         layoutSlot = layout["body"]["day"+str(i+1)] 
         
@@ -140,8 +139,7 @@ def makeBarGraph(data, start, end, layout):
         # change color depending on the temparature
 
         # make rainPercentage with Text()
-        textToShow = "Precipitation: "
-        textToShow += str(instance["precipitation"]*100)
+        textToShow = f"Precipitation: {instance['precipitation']*100}%"
         layoutSlot["additionalInfo"].update(Align(Text(textToShow), align="center", vertical="middle"))
         
         # make weatherType with Text() an emojis
@@ -160,13 +158,16 @@ def makeBarGraph(data, start, end, layout):
 
         index = instance["weather_icon"][:2]
         icon = weatherDict[index]
-
         layoutSlot["weatherType"].update(Align(Emoji(icon), align="center", vertical="middle"))
     
     return layout
 
-def insertFooter(listCommand, layout):
-    return
+def insertFooter(listCommand : dict, layout):
+    text = ""
+    for item in listCommand.items():
+        text += item[1] + f" ( {item[0]} )\n"
+    layout["footer"].update(Align(Text(text), align="center", vertical="middle"))
+    return layout
 
 def insertInfo(data, start, end, listCommand, layout):
     layout = insertCityName(data[0], layout)
@@ -265,16 +266,16 @@ info = [
     },
 ]
 
-layout = initLayout()
-
 listCommand = {
     "SpaceBar": "Cycle through the different display modes",
     "V": "Change to wind speed mode",
     "P": "Change to rain percentage mode",
-    "LeftArroy": "Show the information about the previous time frame",
-    "RightArroy": "Show the information about the next time frame",
+    "←": "Show the information about the previous time frame",
+    "→": "Show the information about the next time frame",
     "R": "Open the search bar to get the information about another city",
 }
+
+layout = initLayout(footerSize=len(listCommand))
 
 layout = insertInfo(info, 1, 5, listCommand, layout)
 
