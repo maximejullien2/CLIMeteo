@@ -117,8 +117,5 @@ while fini == False :
         city_weather = callAPI.get_weather(city_coordinates)
         city_forecast = callAPI.get_forecast(city_coordinates)
         system("clear")
-        print(city_weather)
-        for forecast in city_forecast:
-            print(forecast)
     rechercher = False
 system("clear")
