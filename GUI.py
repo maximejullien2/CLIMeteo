@@ -8,6 +8,11 @@ from rich.panel import Panel
 from rich.jupyter import JupyterMixin
 from rich.ansi import AnsiDecoder
 from rich.console import Console
+from rich_pixels import Pixels
+from PIL import Image
+import requests
+
+import callAPI
 
 import datetime
 
@@ -46,11 +51,14 @@ def initLayout(footerSize = 3):
     layout = Layout()
 
     layout.split_column(
+        Layout(name="blank", size=1),
         Layout(name="cityName", size=1),
         Layout(name="date", size=3),
         Layout(name="body"),
         Layout(name="footer", size=footerSize),
     )
+
+    layout["blank"].update(Align(Text(""), align="center", vertical="middle"))
 
     layout["date"].split_row(
         Layout(name="previous"),
@@ -124,8 +132,8 @@ def makeBarGraph(data, start, end, layout):
         
         layoutSlot.split_column(
             Layout(name="barGraph"),
-            Layout(name="additionalInfo", size=3),
-            Layout(name="weatherType", size=3),
+            Layout(name="additionalInfo", size=1),
+            Layout(name="weatherType"),
         )
 
         # make bar graph with a single bar with plotext
@@ -159,13 +167,20 @@ def makeBarGraph(data, start, end, layout):
         index = instance["weather_icon"][:2]
         icon = weatherDict[index]
         layoutSlot["weatherType"].update(Align(Emoji(icon), align="center", vertical="middle"))
+        icon = Image.open(requests.get(f"https://openweathermap.org/img/wn/{instance['weather_icon']}@2x.png",stream=True).raw).crop((0,25,100,75)).resize((45,20),resample=Image.Resampling.BOX)
+        layoutSlot["weatherType"].update(Align(Pixels.from_image(icon), align="center", vertical="middle"))
     
     return layout
 
 def insertFooter(listCommand : dict, layout):
     text = ""
-    for item in listCommand.items():
-        text += item[1] + f" ( {item[0]} )\n"
+    for i,item in enumerate(listCommand.items()):
+        text += item[1] + f" ( {item[0]} ) "
+        if (i+1)%2 == 0 and i != 0:
+            text += "\n"
+        else:
+            text += " - "
+            
     layout["footer"].update(Align(Text(text), align="center", vertical="middle"))
     return layout
 
@@ -183,10 +198,15 @@ def createLayout(info):
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
         "P": "Change to rain percentage mode",
+        "R": "Open the search bar to get the information about another city",
         "←": "Show the information about the previous time frame",
         "→": "Show the information about the next time frame",
-        "R": "Open the search bar to get the information about another city",
     }
-    layout = initLayout(footerSize=len(listCommand))
+    layout = initLayout(footerSize=len(listCommand)//2)
     layout = insertInfo(info, 1, 5, listCommand, layout)
     print(layout)
+
+coords = callAPI.get_coordinates("Morières-lès-Avignon","")
+info = callAPI.get_forecast(coords)
+
+createLayout(info)
