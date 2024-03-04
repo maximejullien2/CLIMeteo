@@ -178,7 +178,7 @@ def insertInfo(data, start, end, listCommand, layout):
 
     return layout
 
-def createLayout(info):
+def createLayout(info,start):
     listCommand = {
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
@@ -188,5 +188,5 @@ def createLayout(info):
         "R": "Open the search bar to get the information about another city",
     }
     layout = initLayout(footerSize=len(listCommand))
-    layout = insertInfo(info, 1, 5, listCommand, layout)
+    layout = insertInfo(info, start, start+4, listCommand, layout)
     print(layout)
