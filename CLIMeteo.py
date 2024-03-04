@@ -4,6 +4,7 @@ from os import system
 import callAPI
 from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
+import GUI
 
 if sys.argv[1]=="-h":
     messageErreur = "Usage:\n \t python cliMeteo.py -city city [-country country -mode 1] \n\n"
@@ -16,7 +17,7 @@ if sys.argv[1]=="-h":
 
 
 fini = False
-#To know if the program is finish
+#To know if the program is finished
 
 rechercher = False
 #To know if we need to do a research on a city
@@ -98,12 +99,8 @@ while city_coordinates == None :
 city_weather = callAPI.get_weather(city_coordinates)
 city_forecast = callAPI.get_forecast(city_coordinates)
 
-print(city_weather)
-
-for forecast in city_forecast:
-  print(forecast)
-
 while fini == False :
+    GUI.createLayout(city_forecast)
     asyncio.run(main())
     if(rechercher):
         city = input("Veuillez entrer le nom d'une ville : ")

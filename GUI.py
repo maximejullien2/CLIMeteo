@@ -178,105 +178,15 @@ def insertInfo(data, start, end, listCommand, layout):
 
     return layout
 
-info = [
-    "Morières-lès-Avignon",
-    {
-        'hour': datetime.datetime(2024, 2, 21, 17, 0), 
-        'temperature': 16.43, 
-        'feels_like': 15.62, 
-        'humidity': 57, 
-        'weather_description': 'clear sky', 
-        'weather_icon': '01d', 
-        'wind_speed': 2.51, 
-        'wind_direction': 173, 
-        'wind_gust': 3.68, 
-        'precipitation': 0
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 21, 20, 0), 
-        'temperature': 14.69, 
-        'feels_like': 13.86, 
-        'humidity': 63, 
-        'weather_description': 'scattered clouds', 
-        'weather_icon': '03n', 
-        'wind_speed': 2.45, 
-        'wind_direction': 181, 
-        'wind_gust': 3.54, 
-        'precipitation': 0
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 21, 23, 0), 
-        'temperature': 12.06, 
-        'feels_like': 11.28, 
-        'humidity': 75, 
-        'weather_description': 'broken clouds', 
-        'weather_icon': '04n', 
-        'wind_speed': 1.99, 
-        'wind_direction': 137, 
-        'wind_gust': 2.56, 
-        'precipitation': 0
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 22, 2, 0), 
-        'temperature': 10.08, 
-        'feels_like': 9.26, 
-        'humidity': 81, 
-        'weather_description': 'overcast clouds', 
-        'weather_icon': '04n', 
-        'wind_speed': 1.76, 
-        'wind_direction': 115, 
-        'wind_gust': 2.03, 
-        'precipitation': 0
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 22, 5, 0), 
-        'temperature': 10.22, 
-        'feels_like': 9.39, 
-        'humidity': 80, 
-        'weather_description': 'light rain', 
-        'weather_icon': '10n', 
-        'wind_speed': 1.15, 
-        'wind_direction': 55, 
-        'wind_gust': 1.24, 
-        'precipitation': 0.42
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 22, 8, 0), 
-        'temperature': 9.89, 
-        'feels_like': 9.89, 
-        'humidity': 81, 
-        'weather_description': 'light rain', 
-        'weather_icon': '10n', 
-        'wind_speed': 0.86, 
-        'wind_direction': 128, 
-        'wind_gust': 1.35, 
-        'precipitation': 0.47
-    },
-    {
-        'hour': datetime.datetime(2024, 2, 22, 11, 0), 
-        'temperature': 12.37, 
-        'feels_like': 11.46, 
-        'humidity': 69, 
-        'weather_description': 'overcast clouds', 
-        'weather_icon': '04d', 
-        'wind_speed': 2.38, 
-        'wind_direction': 130, 
-        'wind_gust': 4.42, 
-        'precipitation': 0.04
-    },
-]
-
-listCommand = {
-    "SpaceBar": "Cycle through the different display modes",
-    "V": "Change to wind speed mode",
-    "P": "Change to rain percentage mode",
-    "←": "Show the information about the previous time frame",
-    "→": "Show the information about the next time frame",
-    "R": "Open the search bar to get the information about another city",
-}
-
-layout = initLayout(footerSize=len(listCommand))
-
-layout = insertInfo(info, 1, 5, listCommand, layout)
-
-print(layout)
+def createLayout(info):
+    listCommand = {
+        "SpaceBar": "Cycle through the different display modes",
+        "V": "Change to wind speed mode",
+        "P": "Change to rain percentage mode",
+        "←": "Show the information about the previous time frame",
+        "→": "Show the information about the next time frame",
+        "R": "Open the search bar to get the information about another city",
+    }
+    layout = initLayout(footerSize=len(listCommand))
+    layout = insertInfo(info, 1, 5, listCommand, layout)
+    print(layout)
