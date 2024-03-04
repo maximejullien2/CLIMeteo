@@ -14,15 +14,24 @@ import datetime
 import plotext as plt
 
 def make_plot(width, height, data, maxTemp):
+    colorsList=["lightcyan","paleturquoise","cyan","deepskyblue","dodgerblue","lime","springgreen","tomato","red","indianred","firebrick"]
+    limiteList=[-999,-4,1,6,11,16,21,26,31,36,41]
     plt.clf()
 
     date = [data["date"].strftime("%H:%M")]
     temp = [data["temp"]]
+    colors = list()
+    for temperature in temp : 
+        for limite in range(0,len(limiteList)):
+            if(limiteList[limite]>temperature):
+                break
+        colors.append(colorsList[limite])
+
 
     # used to make all of the bar graph the same size
     plt.bar([""], [maxTemp], color="black", width=0)        
 
-    plt.bar(date, temp, color="blue", width=0.2)
+    plt.bar(date, temp, color=color, width=0.2)
     plt.yticks(temp)
     plt.theme("dark")
     plt.frame(False)
