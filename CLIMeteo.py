@@ -6,6 +6,7 @@ from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 import GUI
 
+system("clear")
 if sys.argv[1]=="-h":
     messageErreur = "Usage:\n \t python cliMeteo.py -city city [-country country -mode 1] \n\n"
     messageErreur+= "Options and arguments (and corresponding environment variables):\n\n"
@@ -60,14 +61,17 @@ async def main() -> None:
             elif key_press.key == "right":
                 #Will change display of time in the futur
                 start+=5
-                if(start>41):
-                    start=37
+                print(start)
+                if(start>40):
+                    start=36
+                GUI.clear()
                 GUI.createLayout(city_forecast,start)
             elif key_press.key == "left":
                 #Will change display of time in the past
                 start-=5
                 if(start<1):
                     start=1
+                GUI.clear()
                 GUI.createLayout(city_forecast,start)
             elif key_press.key == "r":
                 #Try to search meteo for a new city
