@@ -33,7 +33,7 @@ async def main() -> None:
     """
     Represent the main programm about keybinds
     """
-    global fini,rechercher,city_forecast,start
+    global fini,rechercher,city_forecast,start,mode
     done = asyncio.Event()
     input = create_input()
 
@@ -41,7 +41,7 @@ async def main() -> None:
         """
         For each key who are pressed , we will test if this correspond to a specific type of Keys.
         """
-        global fini,rechercher,city_forecast,start
+        global fini,rechercher,city_forecast,start,mode
         for key_press in input.read_keys():
             if key_press.key ==" ":
                 #Will change application mode
@@ -50,17 +50,17 @@ async def main() -> None:
                 elif(mode == 2):
                     mode = 1
                 GUI.clear()
-                
+                GUI.createLayout(city_forecast,start,mode)
             elif key_press.key == "v":
                 #Will change mode into speed of wind
                 mode = 2
                 GUI.clear()
-                print("i")
+                GUI.createLayout(city_forecast,start,mode)
             elif key_press.key == "p":
                 #Will change mode into precipitation
                 mode = 1
                 GUI.clear()
-                print("i")
+                GUI.createLayout(city_forecast,start,mode)
             elif key_press.key == "right":
                 #Will change display of time in the futur
                 start+=5
@@ -113,7 +113,7 @@ city_weather = callAPI.get_weather(city_coordinates)
 city_forecast = callAPI.get_forecast(city_coordinates)
 
 while fini == False :
-    GUI.createLayout(city_forecast,start)
+    GUI.createLayout(city_forecast,start,mode)
     asyncio.run(main())
     if(rechercher):
         city = input("Veuillez entrer le nom d'une ville : ")

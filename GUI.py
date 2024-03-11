@@ -132,7 +132,7 @@ def getMaxTemp(data):
 
     return maxTemp
 
-def makeBarGraph(data, start, end, layout):
+def makeBarGraph(data, start, end, layout,mode):
     data = data[start:end+1]
     maxTemp = getMaxTemp(data)
 
@@ -150,13 +150,16 @@ def makeBarGraph(data, start, end, layout):
             "date": instance["hour"],
             "temp": instance["temperature"],
         }
-        graph = RichGraph(tempData, maxTemp)
+        graph = RichGraph(tempData, maxTemp,mode)
         layoutSlot["barGraph"].update(Panel(graph))
 
         # change color depending on the temparature
 
         # make rainPercentage with Text()
-        textToShow = f"Precipitation: {instance['precipitation']*100}%"
+        if mode == 1:
+            textToShow = f"Precipitation: {instance['precipitation']*100}%"
+        elif mode ==2:
+            textToShow = f"Vitesse du Vent: {instance['wind_speed']}km/h"
         layoutSlot["additionalInfo"].update(Align(Text(textToShow), align="center", vertical="middle"))
         
         # make weatherType with Text() an emojis
@@ -175,6 +178,7 @@ def makeBarGraph(data, start, end, layout):
 
         index = instance["weather_icon"][:2]
         icon = weatherDict[index]
+        
         layoutSlot["weatherType"].update(Align(Emoji(icon), align="center", vertical="middle"))
         icon = Image.open(requests.get(f"https://openweathermap.org/img/wn/{instance['weather_icon']}@2x.png",stream=True).raw).crop((0,25,100,75)).resize((45,20),resample=Image.Resampling.BOX)
         layoutSlot["weatherType"].update(Align(Pixels.from_image(icon), align="center", vertical="middle"))
@@ -193,12 +197,12 @@ def insertFooter(listCommand : dict, layout):
     layout["footer"].update(Align(Text(text), align="center", vertical="middle"))
     return layout
 
-def insertInfo(data, start, end, listCommand, layout):
+def insertInfo(data, start, end, listCommand, layout,mode):
     layout = insertCityName(data[0], layout)
     copie = data.copy()
     del copie[0]
     layout = insertDates(copie, start-1, end-1, layout)
-    layout = makeBarGraph(copie, start-1, end-1, layout)
+    layout = makeBarGraph(copie, start-1, end-1, layout,mode)
     layout = insertFooter(listCommand, layout)
 
     return layout
@@ -206,7 +210,7 @@ def insertInfo(data, start, end, listCommand, layout):
 def clear():
     plt.clear_terminal()
 
-def createLayout(info,start):
+def createLayout(info,start,mode):
     listCommand = {
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
@@ -216,5 +220,6 @@ def createLayout(info,start):
         "→": "Show the information about the next time frame",
     }
     layout = initLayout(footerSize=len(listCommand))
-    layout = insertInfo(info, start, start+4, listCommand, layout)
+    layout = insertInfo(info, start, start+4, listCommand, layout,mode)
     print(layout)
+    
