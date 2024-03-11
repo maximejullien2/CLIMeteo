@@ -49,19 +49,21 @@ async def main() -> None:
                     mode = 2
                 elif(mode == 2):
                     mode = 1
+                GUI.clear()
                 
             elif key_press.key == "v":
                 #Will change mode into speed of wind
                 mode = 2
+                GUI.clear()
                 print("i")
             elif key_press.key == "p":
                 #Will change mode into precipitation
                 mode = 1
+                GUI.clear()
                 print("i")
             elif key_press.key == "right":
                 #Will change display of time in the futur
                 start+=5
-                print(start)
                 if(start>40):
                     start=36
                 GUI.clear()
@@ -128,6 +130,8 @@ while fini == False :
         city_weather = callAPI.get_weather(city_coordinates)
         city_forecast = callAPI.get_forecast(city_coordinates)
         system("clear")
+        GUI.clear()
         start=1
     rechercher = False
 system("clear")
+GUI.clear()
