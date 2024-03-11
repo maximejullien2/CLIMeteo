@@ -218,8 +218,3 @@ def createLayout(info,start):
     layout = initLayout(footerSize=len(listCommand))
     layout = insertInfo(info, start, start+4, listCommand, layout)
     print(layout)
-
-coords = callAPI.get_coordinates("Morières-lès-Avignon","")
-info = callAPI.get_forecast(coords)
-
-createLayout(info)
