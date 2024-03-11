@@ -18,13 +18,12 @@ import datetime
 
 import plotext as plt
 
-def make_plot(width, height, data, maximum,mode):
-    print(data)
-    if mode == 1:
+def make_plot(width, height, data, maximum,displayMode):
+    if displayMode == 1:
         colorsList=[50,44,33,27,18,82,76,124,160,161,196]
         limiteList=[-999,-4,1,6,11,16,21,26,31,36,41]
         temp = [data["temp"]]
-    elif mode == 2:
+    elif displayMode == 2:
         colorsList=[50,44,33,27,18,82,76,124]
         limiteList=[0,20,40,60,80,100,120,140]
         temp = [data["wind_speed"]]
@@ -50,16 +49,16 @@ def make_plot(width, height, data, maximum,mode):
     return plt.build()
 
 class RichGraph(JupyterMixin):
-    def __init__(self, data, maximum,mode):
+    def __init__(self, data, maximum,displayMode):
         self.decoder = AnsiDecoder()
         self.data = data
         self.maximum = maximum
-        self.mode = mode
+        self.displayMode = displayMode
 
     def __rich_console__(self, console, options):
         self.width = options.max_width or console.width
         self.height = options.height or console.height
-        canvas = make_plot(self.width, self.height, self.data, self.maximum,self.mode)
+        canvas = make_plot(self.width, self.height, self.data, self.maximum,self.displayMode)
         self.rich_canvas = Group(*self.decoder.decode(canvas))
         yield self.rich_canvas
 
@@ -147,43 +146,49 @@ def getMaxWindSpeed(data):
 
     return maxWindSpeed
 
-def makeBarGraph(data, start, end, layout,mode):
+def makeBarGraph(data, start, end, layout,displayMode,iconMode):
     data = data[start:end+1]
-    if mode == 1:
+    if displayMode == 1:
         maximum = getMaxTemp(data)
-    elif mode == 2:
+    elif displayMode == 2:
         maximum = getMaxWindSpeed(data)
     
     for i, instance in enumerate(data):
         layoutSlot = layout["body"]["day"+str(i+1)] 
-        
-        layoutSlot.split_column(
-            Layout(name="barGraph"),
-            Layout(name="additionalInfo", size=1),
-            Layout(name="weatherType"),
-        )
+        if iconMode == 1:
+            layoutSlot.split_column(
+                Layout(name="barGraph"),
+                Layout(name="additionalInfo", size=1),
+                Layout(name="weatherType"),
+            )
+        elif iconMode == 2:
+            layoutSlot.split_column(
+                Layout(name="barGraph"),
+                Layout(name="additionalInfo", size=1),
+                Layout(name="weatherType",size =1),
+            )
 
         # make bar graph with a single bar with plotext
-        if mode == 1:
+        if displayMode == 1:
             data = {
                 "date": instance["hour"],
                 "temp": instance["temperature"],
             }
-        elif mode == 2:
+        elif displayMode == 2:
             data = {
                 "date": instance["hour"],
                 "wind_speed": instance["wind_speed"],
             }
-        graph = RichGraph(data, maximum,mode)
+        graph = RichGraph(data, maximum,displayMode)
         layoutSlot["barGraph"].update(Panel(graph))
 
         # change color depending on the temparature
 
         # make rainPercentage with Text()
-        if mode == 1:
+        if displayMode == 1:
             textToShow = f"Precipitation: {instance['precipitation']*100}%"
-        elif mode ==2:
-            textToShow = f"Vitesse des rafales: {instance['wind_gust']}km/h"
+        elif displayMode ==2:
+            textToShow = f"Rafales: {instance['wind_gust']}km/h"
         layoutSlot["additionalInfo"].update(Align(Text(textToShow), align="center", vertical="middle"))
         
         # make weatherType with Text() an emojis
@@ -202,10 +207,11 @@ def makeBarGraph(data, start, end, layout,mode):
 
         index = instance["weather_icon"][:2]
         icon = weatherDict[index]
-        
-        layoutSlot["weatherType"].update(Align(Emoji(icon,style=Style(bold=True)), align="center", vertical="middle"))
-        icon = Image.open(requests.get(f"https://openweathermap.org/img/wn/{instance['weather_icon']}@2x.png",stream=True).raw).crop((0,25,100,75)).resize((45,20),resample=Image.Resampling.BOX)
-        layoutSlot["weatherType"].update(Align(Pixels.from_image(icon), align="center", vertical="middle"))
+        if iconMode == 1:
+            icon = Image.open(requests.get(f"https://openweathermap.org/img/wn/{instance['weather_icon']}@2x.png",stream=True).raw).crop((0,25,100,75)).resize((45,20),resample=Image.Resampling.BOX)
+            layoutSlot["weatherType"].update(Align(Pixels.from_image(icon), align="center", vertical="middle"))
+        elif iconMode == 2:
+            layoutSlot["weatherType"].update(Align(Emoji(icon,style=Style(bold=True)), align="center", vertical="middle"))
     
     return layout
 
@@ -221,12 +227,12 @@ def insertFooter(listCommand : dict, layout):
     layout["footer"].update(Align(Text(text), align="center", vertical="middle"))
     return layout
 
-def insertInfo(data, start, end, listCommand, layout,mode):
+def insertInfo(data, start, end, listCommand, layout,displayMode,iconMode):
     layout = insertCityName(data[0], layout)
     copie = data.copy()
     del copie[0]
     layout = insertDates(copie, start-1, end-1, layout)
-    layout = makeBarGraph(copie, start-1, end-1, layout,mode)
+    layout = makeBarGraph(copie, start-1, end-1, layout,displayMode,iconMode)
     layout = insertFooter(listCommand, layout)
 
     return layout
@@ -234,8 +240,9 @@ def insertInfo(data, start, end, listCommand, layout,mode):
 def clear():
     plt.clear_terminal()
 
-def createLayout(info,start,mode):
+def createLayout(info,start,displayMode,iconMode):
     listCommand = {
+        "I" : "Cycle through the different icon modes",
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
         "P": "Change to rain percentage mode",
@@ -244,6 +251,6 @@ def createLayout(info,start,mode):
         "→": "Show the information about the next time frame",
     }
     layout = initLayout(footerSize=len(listCommand))
-    layout = insertInfo(info, start, start+4, listCommand, layout,mode)
+    layout = insertInfo(info, start, start+4, listCommand, layout,displayMode,iconMode)
     print(layout)
     
