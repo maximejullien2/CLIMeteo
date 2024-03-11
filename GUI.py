@@ -18,13 +18,19 @@ import datetime
 
 import plotext as plt
 
-def make_plot(width, height, data, maxTemp):
-    colorsList=[50,44,33,27,18,82,76,124,160,161,196]
-    limiteList=[-999,-4,1,6,11,16,21,26,31,36,41]
+def make_plot(width, height, data, maximum,mode):
+    print(data)
+    if mode == 1:
+        colorsList=[50,44,33,27,18,82,76,124,160,161,196]
+        limiteList=[-999,-4,1,6,11,16,21,26,31,36,41]
+        temp = [data["temp"]]
+    elif mode == 2:
+        colorsList=[50,44,33,27,18,82,76,124]
+        limiteList=[0,20,40,60,80,100,120,140]
+        temp = [data["wind_speed"]]
     plt.clf()
 
     date = [data["date"].strftime("%H:%M")]
-    temp = [data["temp"]]
     colors = list()
     for temperature in temp : 
         for limite in range(0,len(limiteList)):
@@ -34,7 +40,7 @@ def make_plot(width, height, data, maxTemp):
 
 
     # used to make all of the bar graph the same size
-    plt.bar([""], [maxTemp], color="black", width=0)        
+    plt.bar([""], [maximum], color="black", width=0)        
 
     plt.bar(date, temp, color=colors, width=0.2)
     plt.yticks(temp)
@@ -44,15 +50,16 @@ def make_plot(width, height, data, maxTemp):
     return plt.build()
 
 class RichGraph(JupyterMixin):
-    def __init__(self, data, maxTemp):
+    def __init__(self, data, maximum,mode):
         self.decoder = AnsiDecoder()
         self.data = data
-        self.maxTemp = maxTemp
+        self.maximum = maximum
+        self.mode = mode
 
     def __rich_console__(self, console, options):
         self.width = options.max_width or console.width
         self.height = options.height or console.height
-        canvas = make_plot(self.width, self.height, self.data, self.maxTemp)
+        canvas = make_plot(self.width, self.height, self.data, self.maximum,self.mode)
         self.rich_canvas = Group(*self.decoder.decode(canvas))
         yield self.rich_canvas
 
@@ -132,10 +139,21 @@ def getMaxTemp(data):
 
     return maxTemp
 
-def makeBarGraph(data, start, end, layout):
-    data = data[start:end+1]
-    maxTemp = getMaxTemp(data)
+def getMaxWindSpeed(data):
+    maxWindSpeed = 0
+    for instance in data:
+        if maxWindSpeed < instance["wind_speed"]:
+            maxWindSpeed = instance["wind_speed"]
 
+    return maxWindSpeed
+
+def makeBarGraph(data, start, end, layout,mode):
+    data = data[start:end+1]
+    if mode == 1:
+        maximum = getMaxTemp(data)
+    elif mode == 2:
+        maximum = getMaxWindSpeed(data)
+    
     for i, instance in enumerate(data):
         layoutSlot = layout["body"]["day"+str(i+1)] 
         
@@ -146,17 +164,26 @@ def makeBarGraph(data, start, end, layout):
         )
 
         # make bar graph with a single bar with plotext
-        tempData = {
-            "date": instance["hour"],
-            "temp": instance["temperature"],
-        }
-        graph = RichGraph(tempData, maxTemp)
+        if mode == 1:
+            data = {
+                "date": instance["hour"],
+                "temp": instance["temperature"],
+            }
+        elif mode == 2:
+            data = {
+                "date": instance["hour"],
+                "wind_speed": instance["wind_speed"],
+            }
+        graph = RichGraph(data, maximum,mode)
         layoutSlot["barGraph"].update(Panel(graph))
 
         # change color depending on the temparature
 
         # make rainPercentage with Text()
-        textToShow = f"Precipitation: {instance['precipitation']*100}%"
+        if mode == 1:
+            textToShow = f"Precipitation: {instance['precipitation']*100}%"
+        elif mode ==2:
+            textToShow = f"Vitesse des rafales: {instance['wind_gust']}km/h"
         layoutSlot["additionalInfo"].update(Align(Text(textToShow), align="center", vertical="middle"))
         
         # make weatherType with Text() an emojis
@@ -175,7 +202,8 @@ def makeBarGraph(data, start, end, layout):
 
         index = instance["weather_icon"][:2]
         icon = weatherDict[index]
-        layoutSlot["weatherType"].update(Align(Emoji(icon), align="center", vertical="middle"))
+        
+        layoutSlot["weatherType"].update(Align(Emoji(icon,style=Style(bold=True)), align="center", vertical="middle"))
         icon = Image.open(requests.get(f"https://openweathermap.org/img/wn/{instance['weather_icon']}@2x.png",stream=True).raw).crop((0,25,100,75)).resize((45,20),resample=Image.Resampling.BOX)
         layoutSlot["weatherType"].update(Align(Pixels.from_image(icon), align="center", vertical="middle"))
     
@@ -193,12 +221,12 @@ def insertFooter(listCommand : dict, layout):
     layout["footer"].update(Align(Text(text), align="center", vertical="middle"))
     return layout
 
-def insertInfo(data, start, end, listCommand, layout):
+def insertInfo(data, start, end, listCommand, layout,mode):
     layout = insertCityName(data[0], layout)
     copie = data.copy()
     del copie[0]
     layout = insertDates(copie, start-1, end-1, layout)
-    layout = makeBarGraph(copie, start-1, end-1, layout)
+    layout = makeBarGraph(copie, start-1, end-1, layout,mode)
     layout = insertFooter(listCommand, layout)
 
     return layout
@@ -206,7 +234,7 @@ def insertInfo(data, start, end, listCommand, layout):
 def clear():
     plt.clear_terminal()
 
-def createLayout(info,start):
+def createLayout(info,start,mode):
     listCommand = {
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
@@ -216,5 +244,6 @@ def createLayout(info,start):
         "→": "Show the information about the next time frame",
     }
     layout = initLayout(footerSize=len(listCommand))
-    layout = insertInfo(info, start, start+4, listCommand, layout)
+    layout = insertInfo(info, start, start+4, listCommand, layout,mode)
     print(layout)
+    
