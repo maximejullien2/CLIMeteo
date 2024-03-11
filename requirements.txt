@@ -1,4 +1,0 @@
-plotext
-rich
-geopy
-prompt_toolkit
