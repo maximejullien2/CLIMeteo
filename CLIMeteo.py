@@ -67,14 +67,14 @@ async def main() -> None:
                 if(start>40):
                     start=36
                 GUI.clear()
-                GUI.createLayout(city_forecast,start)
+                GUI.createLayout(city_forecast,start,mode)
             elif key_press.key == "left":
                 #Will change display of time in the past
                 start-=5
                 if(start<1):
                     start=1
                 GUI.clear()
-                GUI.createLayout(city_forecast,start)
+                GUI.createLayout(city_forecast,start,mode)
             elif key_press.key == "r":
                 #Try to search meteo for a new city
                 rechercher = True
