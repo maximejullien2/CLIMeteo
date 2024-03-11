@@ -19,15 +19,24 @@ import datetime
 import plotext as plt
 
 def make_plot(width, height, data, maxTemp):
+    colorsList=[50,44,33,27,18,82,76,124,160,161,196]
+    limiteList=[-999,-4,1,6,11,16,21,26,31,36,41]
     plt.clf()
 
     date = [data["date"].strftime("%H:%M")]
     temp = [data["temp"]]
+    colors = list()
+    for temperature in temp : 
+        for limite in range(0,len(limiteList)):
+            if(limiteList[limite]>temperature):
+                break
+        colors.append(colorsList[limite])
+
 
     # used to make all of the bar graph the same size
     plt.bar([""], [maxTemp], color="black", width=0)        
 
-    plt.bar(date, temp, color="blue", width=0.2)
+    plt.bar(date, temp, color=colors, width=0.2)
     plt.yticks(temp)
     plt.theme("dark")
     plt.frame(False)
@@ -186,14 +195,18 @@ def insertFooter(listCommand : dict, layout):
 
 def insertInfo(data, start, end, listCommand, layout):
     layout = insertCityName(data[0], layout)
-    del data[0]
-    layout = insertDates(data, start, end, layout)
-    layout = makeBarGraph(data, start, end, layout)
+    copie = data.copy()
+    del copie[0]
+    layout = insertDates(copie, start-1, end-1, layout)
+    layout = makeBarGraph(copie, start-1, end-1, layout)
     layout = insertFooter(listCommand, layout)
 
     return layout
 
-def createLayout(info):
+def clear():
+    plt.clear_terminal()
+
+def createLayout(info,start):
     listCommand = {
         "SpaceBar": "Cycle through the different display modes",
         "V": "Change to wind speed mode",
@@ -202,8 +215,8 @@ def createLayout(info):
         "←": "Show the information about the previous time frame",
         "→": "Show the information about the next time frame",
     }
-    layout = initLayout(footerSize=len(listCommand)//2)
-    layout = insertInfo(info, 1, 5, listCommand, layout)
+    layout = initLayout(footerSize=len(listCommand))
+    layout = insertInfo(info, start, start+4, listCommand, layout)
     print(layout)
 
 coords = callAPI.get_coordinates("Morières-lès-Avignon","")
