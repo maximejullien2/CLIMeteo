@@ -21,7 +21,7 @@ OWM_API_KEY = "YourAPIKey"
 Ensuite, lancez dans votre terminal la commande suivante : 
 
 ```bash
-python cliMeteo.py -city city [ -country country -mode 1 ]
+python cliMeteo.py -city city [ -country country ]
 ```
 
 ## Sortie de l'application
@@ -36,6 +36,12 @@ Une fois l'application lancée, vous pouvez appuyer sur :
 - V, pour afficher la vitesse des vents;
 - Barre espace, pour basculer entre les modes d'affichage (précipitation et vent); 
 - Flèche de gauche ou de droite, pour parcourir les différentes dates/heures à afficher
+- I , pour changer le type d'icons.
+- Ctrl+C , arréter le programme.
+
+## Documentation de l'API openWeatherMap
+
+Voici le lien de la documentation de l'api d'openWeatherMap [documentation](https://openweathermap.org/api/hourly-forecast/)
 
 ## Librairies utilisées
 
@@ -46,3 +52,7 @@ Une fois l'application lancée, vous pouvez appuyer sur :
 * [plotext](https://github.com/piccolomo/plotext)
 * [asyncio](https://docs.python.org/3/library/asyncio.html)
 * [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/)
+* [rich_pixels](https://github.com/darrenburns/rich-pixels)
+* [sys](https://docs.python.org/3/library/sys.htm)
+* [os](https://docs.python.org/fr/3/library/os.html)
+* [PIL](https://he-arc.github.io/livre-python/pillow/index.html)
