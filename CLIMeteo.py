@@ -6,13 +6,11 @@ from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 import GUI
 
-system("clear")
 if sys.argv[1]=="-h":
     messageErreur = "Usage:\n \t python cliMeteo.py -city city [-country country -mode 1] \n\n"
     messageErreur+= "Options and arguments (and corresponding environment variables):\n\n"
-    messageErreur+= "-city nomVille  : Pour donner la ville dont on veut récupérer les données météo (Obligatoire ) .\n\n"
-    messageErreur+="-country nomPays: Pour donner le pays de la ville dont on veut récupérer les données météo \n                  ( Optionnelle ,valeur origine vide,pour éviter les erreurs \n                  lorsqu'il existe plusieurs villes ayant le même nom ) .\n\n"
-    messageErreur+="-mode 1 ou 2    : Pour choisir le mode d’affichage que l’on veut avoir ( Soit 3 heure par 3 heure (mode 1) \n                   ou jour par jour(mode 2 ) (Optionnelle , valeur origine 1).\n\n"
+    messageErreur+="-city nomVille  : Pour donner la ville dont on veut récupérer les données météo (Obligatoire ) .\n\n"
+    messageErreur+="-country nomPays: Pour donner le pays de la ville dont on veut récupérer les données météo \n                  ( Optionnelle ,valeur origine vide,pour éviter les erreurs) \n                  lorsqu'il existe plusieurs villes ayant le même nom ) .\n\n"
     messageErreur+="-h              : Fourni de l’aide pour l'utilisation du programme (Optionnelle)."
     sys.exit(messageErreur)
 
@@ -23,17 +21,23 @@ fini = False
 rechercher = False
 #To know if we need to do a research on a city
 
-mode = 1
+displayMode = 1
 # mode = 1 This is the mode for precipitation
 # mode = 2 this is the mode to know the speed of wind
 city_forecast = None
+
+#When we will star to display day in API
 start=1
+
+#iconMode = 1 This will use pixels to display icon
+#iconMode = 2 This will use emoji to display icon
+iconMode=1
 
 async def main() -> None:
     """
     Represent the main programm about keybinds
     """
-    global fini,rechercher,city_forecast,start
+    global fini,rechercher,city_forecast,start,displayMode,iconMode
     done = asyncio.Event()
     input = create_input()
 
@@ -41,40 +45,48 @@ async def main() -> None:
         """
         For each key who are pressed , we will test if this correspond to a specific type of Keys.
         """
-        global fini,rechercher,city_forecast,start
+        global fini,rechercher,city_forecast,start,displayMode,iconMode
         for key_press in input.read_keys():
             if key_press.key ==" ":
-                #Will change application mode
-                if(mode == 1):
-                    mode = 2
-                elif(mode == 2):
-                    mode = 1
+                #Will change application display mode
+                if(displayMode == 1):
+                    displayMode = 2
+                elif(displayMode == 2):
+                    displayMode = 1
                 GUI.clear()
-                
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
             elif key_press.key == "v":
-                #Will change mode into speed of wind
-                mode = 2
+                #Will change display mode into speed of wind
+                displayMode = 2
                 GUI.clear()
-                print("i")
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
             elif key_press.key == "p":
-                #Will change mode into precipitation
-                mode = 1
+                #Will change display mode into precipitation
+                displayMode = 1
                 GUI.clear()
-                print("i")
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
+            elif key_press.key == "i":
+                #Will change icon mode
+                if iconMode == 1 :
+                    iconMode = 2
+                elif iconMode == 2:
+                    iconMode = 1
+                GUI.clear()
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
             elif key_press.key == "right":
                 #Will change display of time in the futur
                 start+=5
                 if(start>40):
                     start=36
                 GUI.clear()
-                GUI.createLayout(city_forecast,start)
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
             elif key_press.key == "left":
                 #Will change display of time in the past
                 start-=5
                 if(start<1):
                     start=1
                 GUI.clear()
-                GUI.createLayout(city_forecast,start)
+                GUI.createLayout(city_forecast,start,displayMode,iconMode)
             elif key_press.key == "r":
                 #Try to search meteo for a new city
                 rechercher = True
@@ -94,7 +106,7 @@ if len(sys.argv) < 3:
 if sys.argv[1] != "-city":
     sys.exit("Il manque l'argument -city obligatoire pour sélectionner une ville")
 
-
+system("clear")
 
 city = sys.argv[2]
 country = None
@@ -113,7 +125,7 @@ city_weather = callAPI.get_weather(city_coordinates)
 city_forecast = callAPI.get_forecast(city_coordinates)
 
 while fini == False :
-    GUI.createLayout(city_forecast,start)
+    GUI.createLayout(city_forecast,start,displayMode,iconMode)
     asyncio.run(main())
     if(rechercher):
         city = input("Veuillez entrer le nom d'une ville : ")
