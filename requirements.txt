@@ -1,0 +1,8 @@
+plotext
+rich
+geopy
+prompt_toolkit
+requests
+asyncio
+datetime
+credentials
