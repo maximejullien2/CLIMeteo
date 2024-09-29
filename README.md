@@ -1,10 +1,10 @@
 # CLIMeteo
 
-CLIMeteo est une application permettant de récupérer les informations météorologique d'une ville .
+CLIMeteo est une application permettant de récupérer les informations météorologique d'une ville.
 
 ## Installation 
 
-Pour installer tous les packages nécessaires pour l'utilisation de l'application , lancez dans votre terminal bash :
+Pour installer tous les packages nécessaires pour l'utilisation de l'application, lancez dans votre terminal bash:
 
 ```bash
 ./installation.sh
@@ -12,13 +12,13 @@ Pour installer tous les packages nécessaires pour l'utilisation de l'applicatio
 
 ## Utilisation 
 
-Il faudra tout d'abord créer une clé API [Open Weather Map](https://openweathermap.org) et la placer dans un fichier credentials.py qui contient :
+Il faudra tout d'abord créer une clé API [Open Weather Map](https://openweathermap.org) et la placer dans un fichier credentials.py qui contient:
 
 ```python
 OWM_API_KEY = "YourAPIKey"
 ```
 
-Ensuite, lancez dans votre terminal la commande suivante : 
+Ensuite, lancez dans votre terminal la commande suivante: 
 
 ```bash
 python cliMeteo.py -city city [ -country country ]
@@ -26,18 +26,18 @@ python cliMeteo.py -city city [ -country country ]
 
 ## Sortie de l'application
 
-Voici un exemple de résultat sorti :
+Voici un exemple de résultat sorti:
 
 ## Interactions avec l'application
 
-Une fois l'application lancée, vous pouvez appuyer sur :
+Une fois l'application lancée, vous pouvez appuyer sur:
 - R, pour chercher les informations de météo sur un autre ville;
 - P, pour afficher les pourcentages de chance qu'il pleuve;
 - V, pour afficher la vitesse des vents;
 - Barre espace, pour basculer entre les modes d'affichage (précipitation et vent); 
-- Flèche de gauche ou de droite, pour parcourir les différentes dates/heures à afficher
-- I , pour changer le type d'icons.
-- Ctrl+C , arréter le programme.
+- Flèche de gauche ou de droite, pour parcourir les différentes dates/heures à afficher;
+- I, pour changer le type d'icons;
+- Ctrl+C, pour arrêter le programme.
 
 ## Documentation de l'API openWeatherMap
 
